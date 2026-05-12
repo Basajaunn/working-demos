@@ -13,37 +13,31 @@ with open('passlist.txt', 'r') as f:
 password_list = raw_text.splitlines()
 
 usr_pwd = getpass.getpass("Enter your password to be checked! It will not show anything for security purposes. ")
-length = len(usr_pwd)
 
 score = 0
 
 def length_test(usr_pwd):
-    global score
+    length = len(usr_pwd)
     safe = 16
     if length >= safe:
         print("This password meets the length requirements.")
-        score += 3
+        return 3
     elif length < 16 and length > 10:
         print("This password is good, but should be 16 characters.")
-        score +=1
+        return 1
     else:
         print("This password is too short, it could be guessed or cracked more easily.")
-
-length_test(usr_pwd)
+        return 0
 
 def common_pwd_check(usr_pwd):
-    global score
     if usr_pwd in password_list:
-        print("Your password was found a the list of the 10000 most common passwords.")
-        score -= 3
+        print("Your password was found in a list of the 10000 most common passwords.")
+        return -3
     else:
         print("Your password wasn't found in the 10,000 most common passwords.")
-        score += 1
-
-common_pwd_check(usr_pwd)
+        return 1
 
 def repeating_characters(usr_pwd):
-    global score
     s = ""
     repeating = 0
     for letter in usr_pwd:
@@ -55,20 +49,18 @@ def repeating_characters(usr_pwd):
 
     if repeating >= 10:
         print("You have ten or more repeating characters. This isn't bad, but it isn't good either. Try using a combination of different ones for length requirements, not just a spamming of the same one\n")
-        score += 1
-    if repeating >= 3 and repeating < 10:
+        return 1
+    elif repeating >= 3 and repeating < 10:
         print("You have multiple repeating characters next to one another. This is bad security practice.")
-        score -= 1
+        return -1
     elif repeating >= 1 and repeating < 3:
         print("You have repeating characters next to one another. This is bad security practice.")
+        return 0
     elif repeating < 1:
         print("Your password doesn't have any repeating characters, that is great!")
-        score += 2
-
-repeating_characters(usr_pwd)
+        return 2
 
 def variation(usr_pwd):
-    global score
     unique_characters = 0
     if re.search(r"[a-z]", usr_pwd):
         unique_characters += 1
@@ -83,14 +75,19 @@ def variation(usr_pwd):
         unique_characters += 1
     
     if unique_characters == 1:
-        score += 1
+        return 0
     elif unique_characters == 2:
-        score += 2
+        return 1
     elif unique_characters == 3:
-        score += 3
+        return 2
     elif unique_characters == 4:
-        score += 4
-    
-variation(usr_pwd)
+        return 3
 
+score += length_test(usr_pwd)
+score += common_pwd_check(usr_pwd)
+score += repeating_characters(usr_pwd)
+score += variation(usr_pwd)
+
+print("The scoring system is as follows:")
+print("Any negative number is bad!\n 0-2 is a weak password\n 3-5 is an okay password\n 6-8 is a good password\n 9-10 is a great password!")
 print(f"Your password score is {score}")

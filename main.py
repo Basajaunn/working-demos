@@ -6,24 +6,35 @@ print(art)
 print("Welcome to SaltedSpud! This is an EDUCATIONAL USE ONLY hash cracker that checks a hash against the 100,000 most common passwords list from SecLists by default. You can also choose your own file!")
 print("Have fun with it, and do not use this for malicious purposes!!!\n")
 
-## Import file for hashlib and declare it
-def read_file(file_name):
-    try:
-        with open(file_name, 'r') as f:
-            raw_list = f.read()
+# Import file for hashlib and declare it
+def file_choice():
+    while True:
+        try:
+            choice = input("Will you be using the default list? Type yes or no: ").lower()
+            if choice == "yes":
+                file_name = "100kpass.txt"
+            elif choice == "no":
+                file_name = input("Please enter the path and file name of your chosen wordlist: \n")
+            else:
+                print("Invalid input")
+                continue
 
-        pass_list = raw_list.splitlines()
-        return pass_list
-    except FileNotFoundError:
-        print("That file wasn't found.")
-        return None
+            with open(file_name, 'r') as f:
+                raw_list = f.read()
 
-## Ask for hash type
+            pass_list = raw_list.splitlines()
+            break
+        except FileNotFoundError:
+            print("That file wasn't found.")
+
+    return pass_list
+
+# Ask for hash type
 def hash_alg():
     while True:
         hash_type = input("What type of hash are you entering? MD5, SHA256, SHA512 or SHA1? \n").upper()
         if hash_type == "MD5":
-            algorithm= hashlib.md5
+            algorithm = hashlib.md5
             break
         elif hash_type == "SHA256":
             algorithm = hashlib.sha256
@@ -38,13 +49,14 @@ def hash_alg():
             print("Invalid input, please try again!")
         
     return algorithm
-## Ask user for hash input
+
+# Ask user for hash input
 def user_hash():
     entered_hash = input("Please enter your hash to be checked: \n")
     
     return entered_hash
 
-
+# Hashing and logic
 def hashing_logic(pass_list, algorithm, entered_hash):
     for s in pass_list:
         s = s.encode()
@@ -55,36 +67,21 @@ def hashing_logic(pass_list, algorithm, entered_hash):
             return user_password
     return False
 
-## Begin main function of program 
+# Begin main function of program 
 def main():
-    while True:
-        choice = input("Will you be using the default list? Type yes or no: ").lower()
-        if choice == "yes":
-            file_name = "100kpass.txt"
-            break
-        elif choice == "no":
-            file_name = input("Please enter the path and file name of your chosen wordlist: \n")
-            break
-        else:
-            print("Invalid input, please try again!")
-
-    pass_list = read_file(file_name)
-    
-    if pass_list:
-        algorithm = hash_alg()
-        entered_hash = user_hash()
-        start = time.perf_counter()
-        user_password = hashing_logic(pass_list, algorithm, entered_hash)
-        end = time.perf_counter()
-        crack_time = end - start
-        if user_password:
-            print(f"Your hash was cracked! The password was {user_password}")
-            print(f"It took {crack_time:.4f} seconds to crack")
-        else:
-            print("Your hash was not found in the chosen list!")
-            print(f"It took {crack_time:.4f} seconds to look for your password!")
+    pass_list = file_choice()
+    algorithm = hash_alg()
+    entered_hash = user_hash()
+    start = time.perf_counter()
+    user_password = hashing_logic(pass_list, algorithm, entered_hash)
+    end = time.perf_counter()
+    crack_time = end - start
+    if user_password:
+        print(f"Your hash was cracked! The password was {user_password}")
+        print(f"It took {crack_time:.4f} seconds to crack")
     else:
-        print("Invalid filename. Please restart the program.")
+        print("Your hash was not found in the chosen list!")
+        print(f"It took {crack_time:.4f} seconds to look for your password!")
 
 
 if __name__ == "__main__":

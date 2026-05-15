@@ -2,6 +2,7 @@
 ## What is it?
 SaltedSpud is a hash cracker that allows users to input a hash (MD5, SHA1, SHA256, SHA512) and check it against either a standard wordlist, or their own file.
   - This is **ONLY** intended for educational use and fun. Do NOT use for malicious purposes
+
 The default list can be found [here](https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/100k-most-used-passwords-NCSC.txt)
 
 ## How to run
